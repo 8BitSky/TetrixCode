@@ -1,0 +1,42 @@
+#include <TELEOP.h>   // TETRIX TeleOp module Library
+#include <PRIZM.h>    // TETRIX PRIZM Library
+
+PRIZM prizm;          
+PS4 ps4;             
+
+int Motor1;         
+int Motor2;          
+
+void setup() {
+
+  prizm.PrizmBegin();            
+  ps4.setDeadZone (LEFT,10);    
+  ps4.setDeadZone(RIGHT,10);     
+
+}
+
+void loop() {
+
+  ps4.getPS4();                                 
+
+  if(ps4.Connected){                            
+    //Basic Move Code
+      Motor1 = ps4.Motor(LY);                  
+      Motor2 = ps4.Motor(RY);                  
+      prizm.setMotorPowers(Motor1, Motor2);   
+    //90 Degree turns
+    if(ps4.button(L1)==1){
+    prizm.setMotorDegrees(360,270,360,-270);delay(1200);
+    }
+    if(ps4.button(R1)==1){
+    prizm.setMotorDegrees(360,-270,360,270);delay(1200);
+    }
+    prizm.resetEncoders();
+    
+  }
+  else{                                         
+      prizm.setMotorPowers(0,0);
+  }
+
+  
+}
