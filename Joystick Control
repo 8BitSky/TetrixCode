@@ -24,14 +24,7 @@ void loop() {
       Motor1 = ps4.Motor(LY);                  
       Motor2 = ps4.Motor(RY);                  
       prizm.setMotorPowers(Motor1, Motor2);   
-    //90 Degree turns
-    if(ps4.button(L1)==1){
-    prizm.setMotorDegrees(360,270,360,-270);delay(1200);
-    }
-    if(ps4.button(R1)==1){
-    prizm.setMotorDegrees(360,-270,360,270);delay(1200);
-    }
-    prizm.resetEncoders();
+  
     
   }
   else{                                         
