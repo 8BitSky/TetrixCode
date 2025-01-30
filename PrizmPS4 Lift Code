@@ -1,0 +1,55 @@
+
+#include <PRIZM.h>    // TETRIX PRIZM Library
+#include <TELEOP.h>   // TETRIX TeleOp module Library
+
+PRIZM prizm;          // Create an instance within the PRIZM Library class named prizm
+PS4 ps4;              // Create an instance within the PS4 Library class named ps4
+
+void setup() {
+ Serial.begin(115200);      
+ prizm.PrizmBegin();       
+ ps4.setDeadZone(LEFT,10);    
+ ps4.setDeadZone(RIGHT,10);   
+}
+
+int MAX_FLOOR = 4;
+int MIN_FLOOR = 0;
+int current_floor = 0;
+int servoRunTime = 1000;
+
+void loop() {
+  ps4.getPS4(); 
+  if(ps4.Connected){
+    if(ps4.Button(UP)){VerticalLift(1);}      
+    if(ps4.Button(DOWN)){VerticalLift(-1);}    
+
+  }
+}
+
+
+void VerticalLift(int direction){
+  if (direction == 1 && (current_floor+direction <= MAX_FLOOR)){
+  current_floor++;
+  prizm.setCRServoState(1, 100);
+  delay(servoRunTime);  
+  prizm.setCRServoState(1, 0);
+  }
+  else if (direction == -1 && (current_floor+direction >= MIN_FLOOR)){
+  current_floor--;
+  prizm.setCRServoState(1, -100);
+  delay(servoRunTime);  
+  prizm.setCRServoState(1, 0);
+  } else {
+    Rumble();
+  }
+}
+
+
+
+void Rumble(){
+  ps4.setRumble(SLOW);                 
+  delay(100);                          
+  ps4.setRumble(STOP);                                        
+}
+
+
