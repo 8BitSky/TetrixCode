@@ -26,7 +26,7 @@ void loop() {
   }
 }
 
-
+//KW This is some code used in the past for a fake elevator, If you wanted to traverse the entire span/distance, check out the recommend below
 void VerticalLift(int direction){
   if (direction == 1 && (current_floor+direction <= MAX_FLOOR)){
   current_floor++;
@@ -42,6 +42,22 @@ void VerticalLift(int direction){
   } else {
     Rumble();
   }
+}
+
+void VerticalLiftMax(){
+//This will allow you to approach the problem with a single button press (like a boolean switch we were discussing)
+//start by checking for current position, if currently in lower half, go up
+//then query the current position to help determine the delay length for movement
+ if( current_floor <= MAX_FLOOR/2){
+   int floors_left = MAX_FLOOR - current_floor;
+   prizm.setCRServoState(1, 100);
+   delay(servoRunTime* floors_left); 
+   current_floor = MAX_FLOOR;
+ }
+//You can repeat this structure for the way down.
+if ( current_floor > MAX_FLOOR/2){
+ //CODEHERE
+}
 }
 
 
