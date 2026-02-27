@@ -36,8 +36,8 @@ void loop() {     // repeat this code in a loop
   //to control line follow logic
   byte raw = readRawByte();
   byte mask = toLineMask(raw);     // 1 = black line
-  int count = bitCount8(mask);
-  int pos = linePosition(mask);
+  int count = bitCount8(mask);     // Important for determining line thickness, junctions turns
+  int pos = linePosition(mask);    // Important for determining line placement for steering (Center is 3500, error = 3500- cur_position)
 
   Serial.print("raw=");
   printBits(raw);
