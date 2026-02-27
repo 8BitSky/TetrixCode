@@ -15,14 +15,13 @@ PRIZM prizm;            // instantiate a PRIZM object "prizm" so we can use its 
 #define INVERT_RAW true
 
 void setup() {
-
-   prizm.PrizmBegin();   // initialize the PRIZM controller
-     Serial.begin(115200);
+  prizm.PrizmBegin();   // initialize the PRIZM controller
+  Serial.begin(115200);
   delay(200);
 
   Wire.begin();         // Use PRIZM's Arduino-compatible I2C
   Wire.setClock(100000);
-
+//Comment out following lines in actual code
   Serial.println("\nPRIZM + Yahboom 8ch line sensor (I2C 0x12)");
   Serial.print("INVERT_RAW = ");
   Serial.println(INVERT_RAW ? "true (recommended for black line)" : "false");
@@ -31,7 +30,11 @@ void setup() {
 }
 
 void loop() {     // repeat this code in a loop
-byte raw = readRawByte();
+  //This code runs the helper functions to print info to serial monitor and allow sensor to be configured
+  //In production code, the following can be placed into a LinePosition function to determine if/where line is present
+  //This data can then be used to help influence a state machine (enumerations), nested IF/ELSE statements, or Switch statement
+  //to control line follow logic
+  byte raw = readRawByte();
   byte mask = toLineMask(raw);     // 1 = black line
   int count = bitCount8(mask);
   int pos = linePosition(mask);
@@ -55,7 +58,7 @@ byte raw = readRawByte();
 
 
 
-
+//Function reads/talks to I2C sensors and returns infromation in the form of a byte
 byte readRawByte() {
   Wire.beginTransmission(SENSOR_ADDR);
   Wire.write(RAW_REG);
@@ -67,18 +70,23 @@ byte readRawByte() {
   return 0xFF;
 }
 
+//This function inverts the byte into a mask (example: 110011 (zero represent line) gets masked to 001100 (1 represent line)
+//Masking to the value of 1 allows for future addition and line conversions into a number which represents ration of the line
+//in a left to right direction
 byte toLineMask(byte raw) {
   // Goal: 1 = black line detected
   return INVERT_RAW ? (byte)~raw : raw;
 }
 
+//Function counts total amount of "1's" in mask to let program know line thickness
 int bitCount8(byte x) {
   int c = 0;
   for (int i = 0; i < 8; i++) c += (x >> i) & 1;
   return c;
 }
 
-// Weighted position: 0..7000 across sensors (bit0..bit7)
+
+// Function lets program know the weighted position: 0..7000 across sensors (bit0..bit7). 0=left, 3500=middle, 7000=right 
 int linePosition(byte lineMask) {
   long sum = 0;
   long wsum = 0;
@@ -93,6 +101,7 @@ int linePosition(byte lineMask) {
   return (int)(wsum / sum);
 }
 
+//Helper function to print data to serial monitor
 void printBits(byte b) {
   for (int i = 7; i >= 0; i--) {
     Serial.print((b >> i) & 1);
